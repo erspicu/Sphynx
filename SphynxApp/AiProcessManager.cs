@@ -9,15 +9,74 @@ namespace SphynxApp
 {
     public class AiProcessManager
     {
+        private Process? _pwshProcess;
+        private const string JobFinishedTag = "[job finished]";
+        
         public event EventHandler<string>? OnOutputReceived;
         public event EventHandler? OnJobFinished;
 
         private static readonly Regex AnsiRegex = new Regex(@"\x1B\[[^@-_]*[@-_]|\x1B[@-_]", RegexOptions.Compiled);
-        private const string JobFinishedTag = "[job finished]";
 
-        public void Start(string fullCommand)
+        public void Start(string initialCmd)
         {
-            OnOutputReceived?.Invoke(this, $"\x1b[1;34m[System] Terminal ready for task execution...\x1b[0m\r\n");
+            Stop(); 
+
+            string shell = IsCommandAvailable("pwsh.exe") ? "pwsh.exe" : "powershell.exe";
+
+            _pwshProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = shell,
+                    Arguments = "-NoProfile",
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    StandardErrorEncoding = Encoding.UTF8
+                }
+            };
+
+            // 極致環境偽裝
+            _pwshProcess.StartInfo.EnvironmentVariables["TERM"] = "xterm-256color";
+            _pwshProcess.StartInfo.EnvironmentVariables["FORCE_COLOR"] = "1";
+
+            _pwshProcess.OutputDataReceived += (s, e) => HandleData(e.Data);
+            _pwshProcess.ErrorDataReceived += (s, e) => HandleData(e.Data);
+
+            try
+            {
+                _pwshProcess.Start();
+                _pwshProcess.BeginOutputReadLine();
+                _pwshProcess.BeginErrorReadLine();
+
+                _pwshProcess.StandardInput.WriteLine("$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;");
+                _pwshProcess.StandardInput.WriteLine(initialCmd);
+                _pwshProcess.StandardInput.Flush();
+
+                OnOutputReceived?.Invoke(this, $"\x1b[1;34m[System] Terminal active. Environment ready.\x1b[0m\r\n");
+            }
+            catch (Exception ex)
+            {
+                OnOutputReceived?.Invoke(this, $"\x1b[1;31m[Critical Error] {ex.Message}\x1b[0m\r\n");
+            }
+        }
+
+        public void SendMessage(string text)
+        {
+            if (_pwshProcess != null && !_pwshProcess.HasExited)
+            {
+                _pwshProcess.StandardInput.Write(text + "\r\n");
+                _pwshProcess.StandardInput.Flush();
+            }
+        }
+
+        public bool SendMessageToPid(int pid, string text)
+        {
+            SendMessage(text);
+            return true;
         }
 
         public void RunOnce(string fileName, string arguments)
@@ -58,23 +117,36 @@ namespace SphynxApp
             });
         }
 
-        public void SendMessage(string text)
+        private void HandleData(string? data)
         {
-            // 暫時留空，因為 Claude 改用 RunOnce 模式
-        }
-
-        public bool SendMessageToPid(int pid, string text) => true;
-
-        private void HandleData(string data)
-        {
+            if (data == null) return;
             string plainText = AnsiRegex.Replace(data, "");
-            if (plainText.Contains(JobFinishedTag))
-            {
-                OnJobFinished?.Invoke(this, EventArgs.Empty);
-            }
-            OnOutputReceived?.Invoke(this, data + "\r\n");
+            if (plainText.Contains(JobFinishedTag)) OnJobFinished?.Invoke(this, EventArgs.Empty);
+            OnOutputReceived?.Invoke(this, data);
         }
 
-        public void Stop() { }
+        private bool IsCommandAvailable(string cmd)
+        {
+            try
+            {
+                using (var p = new Process())
+                {
+                    p.StartInfo.FileName = "where"; p.StartInfo.Arguments = cmd;
+                    p.StartInfo.UseShellExecute = false; p.StartInfo.CreateNoWindow = true;
+                    p.Start(); p.WaitForExit(); return p.ExitCode == 0;
+                }
+            }
+            catch { return false; }
+        }
+
+        public void Stop()
+        {
+            if (_pwshProcess != null && !_pwshProcess.HasExited)
+            {
+                try { _pwshProcess.Kill(true); } catch { }
+                _pwshProcess.Dispose();
+                _pwshProcess = null;
+            }
+        }
     }
 }

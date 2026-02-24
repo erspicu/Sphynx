@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background: #1e1e1e; overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
         #terminal { width: 100vw; height: 100vh; }
     </style>
 </head>
@@ -13,11 +13,11 @@
     <div id="terminal"></div>
     <script>
         const term = new Terminal({
-            theme: { background: "#1e1e1e", foreground: "#cccccc" },
-            fontFamily: "Consolas, \"Courier New\", monospace",
+            theme: { background: "#000000", foreground: "#ffffff" },
+            fontFamily: "Consolas, 'Courier New', monospace",
             fontSize: 14,
             cursorBlink: true,
-            convertEol: true
+            convertEol: false // ConPTY 已經處理好換行了
         });
         const fitAddon = new FitAddon.FitAddon();
         term.loadAddon(fitAddon);
@@ -26,11 +26,14 @@
 
         window.onresize = () => fitAddon.fit();
 
+        // 供 C# 呼叫的寫入接口
         function writeToTerminal(text) {
             term.write(text);
         }
 
-        writeToTerminal("\x1b[1;32m[Sphynx AI Station] Terminal Ready...\x1b[0m\r\n");
+        // 當 xterm.js 的大小改變時，可以擴展此處回傳給 C# (Resize)
+        
+        writeToTerminal("\x1b[1;32m[Sphynx Terminal Ready]\x1b[0m\r\n");
     </script>
 </body>
 </html>

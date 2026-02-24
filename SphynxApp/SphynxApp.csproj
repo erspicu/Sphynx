@@ -11,9 +11,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3800.47" />
     <PackageReference Include="Telegram.Bot" Version="22.9.0" />
-    <Reference Include="Pty.Net">
-      <HintPath>lib\Pty.Net.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

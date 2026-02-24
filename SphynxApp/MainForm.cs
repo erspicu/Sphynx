@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using Microsoft.Web.WebView2.Core;
@@ -20,6 +21,9 @@ namespace SphynxApp
             InitializeCustomComponents();
         }
 
+        private System.Collections.Concurrent.ConcurrentQueue<string> _outputBuffer = new();
+        private System.Windows.Forms.Timer? _flushTimer;
+
         private async void InitializeCustomComponents()
         {
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -38,17 +42,42 @@ namespace SphynxApp
             } catch { }
 
             _aiManager = new AiProcessManager();
-            _aiManager.OnOutputReceived += (s, text) => WriteToXterm(text);
+            _aiManager.OnOutputReceived += (s, text) => {
+                _outputBuffer.Enqueue(text);
+            };
+            
             _aiManager.OnJobFinished += async (s, e) => {
                 if (_tgManager != null) await _tgManager.SendNotificationAsync("✅ 任務已完成！");
                 WriteToXterm("\r\n\x1b[1;33m[System] Job finished.\x1b[0m\r\n");
             };
+
+            // 初始化計時器 (60fps) 批次推送資料
+            _flushTimer = new System.Windows.Forms.Timer { Interval = 16 };
+            _flushTimer.Tick += (s, e) => FlushOutputBuffer();
+            _flushTimer.Start();
 
             cmbAiTool.SelectedIndex = 1;
 
             await Task.Delay(1500);
             StartSelectedTool();
             _isInitialStart = false;
+        }
+
+        private void FlushOutputBuffer()
+        {
+            if (!_isWebViewReady || _outputBuffer.IsEmpty) return;
+
+            StringBuilder sb = new StringBuilder();
+            while (_outputBuffer.TryDequeue(out string? part))
+            {
+                sb.Append(part);
+            }
+
+            if (sb.Length > 0)
+            {
+                string escaped = System.Web.HttpUtility.JavaScriptStringEncode(sb.ToString());
+                webViewTerminal.CoreWebView2.ExecuteScriptAsync($"writeToTerminal('{escaped}')");
+            }
         }
 
         private void cmbAiTool_SelectedIndexChanged(object sender, EventArgs e)
@@ -121,10 +150,8 @@ namespace SphynxApp
 
         private void WriteToXterm(string text)
         {
-            if (!_isWebViewReady || string.IsNullOrEmpty(text)) return;
-            if (this.InvokeRequired) { this.Invoke(new Action(() => WriteToXterm(text))); return; }
-            string escaped = System.Web.HttpUtility.JavaScriptStringEncode(text + "\r\n");
-            webViewTerminal.CoreWebView2.ExecuteScriptAsync($"writeToTerminal('{escaped}')");
+            if (string.IsNullOrEmpty(text)) return;
+            _outputBuffer.Enqueue(text);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
