@@ -70,9 +70,8 @@ namespace SphynxApp
                     return;
                 }
             } else if (selected == "Claude Code") {
-                string claudePath = @"C:\Users\erspi\.local\bin\claude.exe";
-                // 方案 B+：啟動持久對話，並由 AiProcessManager 負責 TTY/ANSI 偽裝
-                fullCommand = $"& '{claudePath}' --dangerously-skip-permissions"; 
+                // 進入針對 Claude Code 優化的模式
+                fullCommand = "echo 'Claude Code Station (Context-Aware) Ready.'"; 
             }
 
             if (!string.IsNullOrEmpty(fullCommand)) {
@@ -86,8 +85,14 @@ namespace SphynxApp
             if (string.IsNullOrWhiteSpace(cmd)) return;
             WriteToXterm($"\r\n\x1b[1;32m[User] {cmd}\x1b[0m\r\n");
 
-            // 直接發送給持久連線
-            _aiManager?.SendMessage(cmd);
+            string selected = cmbAiTool.SelectedItem?.ToString() ?? "";
+            if (selected == "Claude Code") {
+                string claudePath = @"C:\Users\erspi\.local\bin\claude.exe";
+                // 使用 RunOnce 模式配合 -c 繼承對話與 -p 強制輸出文字
+                _aiManager?.RunOnce(claudePath, $"--dangerously-skip-permissions -c -p \"{cmd.Replace("\"", "\\\"")}\"");
+            } else {
+                _aiManager?.SendMessage(cmd);
+            }
             
             txtInput.Clear();
         }

@@ -1,0 +1,25 @@
+--- Claude Code Diagnostic Start ---
+
+[Test: Basic Version]
+Command: C:\Users\erspi\.local\bin\claude.exe 
+Status: Exited with code 1
+--- Captured Output ---
+
+--- Captured Errors ---
+
+
+[Test: Interactive Attempt]
+Command: C:\Users\erspi\.local\bin\claude.exe 
+Status: Exited with code 1
+--- Captured Output ---
+
+--- Captured Errors ---
+
+
+[Test: Help Menu]
+Command: C:\Users\erspi\.local\bin\claude.exe 
+Status: Exited with code 1
+--- Captured Output ---
+
+--- Captured Errors ---
+
