@@ -70,8 +70,9 @@ namespace SphynxApp
                     return;
                 }
             } else if (selected == "Claude Code") {
-                // 方案 B 在重導向管道中會因 TTY 限制而掛起，改回具備連貫性的 RunOnce 模式
-                fullCommand = "echo 'Claude Code Station Ready (Context-Aware Mode).'"; 
+                string claudePath = @"C:\Users\erspi\.local\bin\claude.exe";
+                // 方案 B+：啟動持久對話，並由 AiProcessManager 負責 TTY/ANSI 偽裝
+                fullCommand = $"& '{claudePath}' --dangerously-skip-permissions"; 
             }
 
             if (!string.IsNullOrEmpty(fullCommand)) {
@@ -85,14 +86,9 @@ namespace SphynxApp
             if (string.IsNullOrWhiteSpace(cmd)) return;
             WriteToXterm($"\r\n\x1b[1;32m[User] {cmd}\x1b[0m\r\n");
 
-            string selected = cmbAiTool.SelectedItem?.ToString() ?? "";
-            if (selected == "Claude Code") {
-                string claudePath = @"C:\Users\erspi\.local\bin\claude.exe";
-                // 使用 -c 保持對話連貫，-p 確保在管道中能正確輸出
-                _aiManager?.RunOnce(claudePath, $"--dangerously-skip-permissions -c -p \"{cmd.Replace("\"", "\\\"")}\"");
-            } else {
-                _aiManager?.SendMessage(cmd);
-            }
+            // 直接發送給持久連線
+            _aiManager?.SendMessage(cmd);
+            
             txtInput.Clear();
         }
 
