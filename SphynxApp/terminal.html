@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sphynx Terminal</title>
+
+  <!-- xterm.js 5.x — ANSI 色彩 / Loading 動畫完美渲染 -->
+  <link  rel="stylesheet"
+         href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+  <!-- FitAddon：讓終端機自動填滿容器寬高 -->
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #0d1117;
+      overflow: hidden;
+    }
+
+    #terminal-container {
+      width: 100%; height: 100%;
+      padding: 4px;
+    }
+
+    /* 讓 xterm.js 的 canvas 完整填滿 */
+    .xterm { height: 100%; }
+    .xterm-viewport { overflow-y: auto !important; }
+  </style>
+</head>
+<body>
+  <div id="terminal-container"></div>
+
+  <script>
+    // ──────────────────────────────────────────────────────
+    // 初始化 xterm.js Terminal，深色主題仿 VS Code Dark+
+    // ──────────────────────────────────────────────────────
+    const term = new Terminal({
+      cursorBlink   : true,
+      cursorStyle   : 'block',
+      scrollback    : 10000,
+      fontFamily    : "'Cascadia Code', 'Consolas', 'Courier New', monospace",
+      fontSize      : 14,
+      lineHeight    : 1.2,
+      allowTransparency: false,
+      convertEol    : false,   // 保留原始 \r\n，讓 ANSI 正確顯示
+      theme: {
+        background    : '#0d1117',
+        foreground    : '#c9d1d9',
+        cursor        : '#58a6ff',
+        selectionBackground: '#264f78',
+        black         : '#0d1117',
+        red           : '#ff7b72',
+        green         : '#3fb950',
+        yellow        : '#d29922',
+        blue          : '#58a6ff',
+        magenta       : '#bc8cff',
+        cyan          : '#39c5cf',
+        white         : '#b1bac4',
+        brightBlack   : '#6e7681',
+        brightRed     : '#ffa198',
+        brightGreen   : '#56d364',
+        brightYellow  : '#e3b341',
+        brightBlue    : '#79c0ff',
+        brightMagenta : '#d2a8ff',
+        brightCyan    : '#56d8eb',
+        brightWhite   : '#f0f6fc',
+      }
+    });
+
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
+    term.open(document.getElementById('terminal-container'));
+    fitAddon.fit();
+
+    // 視窗 resize 時重新 fit（C# 那端可呼叫 resizeTerminal 通知 PTY）
+    window.addEventListener('resize', () => fitAddon.fit());
+
+    // ──────────────────────────────────────────────────────
+    // writeToTerminal(text)
+    //   C# 透過 ExecuteScriptAsync 呼叫此函式，
+    //   將 PTY 的 raw ANSI 串流「原封不動」丟給 xterm.js
+    // ──────────────────────────────────────────────────────
+    function writeToTerminal(text) {
+      term.write(text);
+    }
+
+    // ──────────────────────────────────────────────────────
+    // resizeTerminal(cols, rows)
+    //   C# 在 PTY Resize 後通知前端同步尺寸
+    // ──────────────────────────────────────────────────────
+    function resizeTerminal(cols, rows) {
+      term.resize(cols, rows);
+    }
+
+    // ──────────────────────────────────────────────────────
+    // clearTerminal()
+    //   C# 呼叫以清空畫面
+    // ──────────────────────────────────────────────────────
+    function clearTerminal() {
+      term.clear();
+    }
+
+    // ──────────────────────────────────────────────────────
+    // PTY Resize 橋接：xterm.js FitAddon 計算出新的 cols/rows 後，
+    // 透過 WebView2 WebMessageReceived 通知 C# 同步 ConPTY 尺寸。
+    // 若不在 WebView2 中（如普通瀏覽器）則跳過。
+    // ──────────────────────────────────────────────────────
+    term.onResize(({ cols, rows }) => {
+      if (window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage(
+          JSON.stringify({ type: 'resize', cols: cols, rows: rows })
+        );
+      }
+    });
+
+    // 頁面載入後觸發一次 fit，讓 xterm 計算真實的 cols/rows 並通知 C#
+    window.addEventListener('load', () => {
+      fitAddon.fit();
+    });
+
+    // ──────────────────────────────────────────────────────
+    // 頁面載入後顯示歡迎訊息
+    // ──────────────────────────────────────────────────────
+    term.writeln('\x1b[1;34m  ███████╗██████╗ ██╗  ██╗██╗   ██╗███╗  ██╗██╗  ██╗\x1b[0m');
+    term.writeln('\x1b[1;34m  ██╔════╝██╔══██╗██║  ██║╚██╗ ██╔╝████╗ ██║╚██╗██╔╝\x1b[0m');
+    term.writeln('\x1b[1;36m  ███████╗██████╔╝███████║ ╚████╔╝ ██╔██╗██║ ╚███╔╝ \x1b[0m');
+    term.writeln('\x1b[1;36m  ╚════██║██╔═══╝ ██╔══██║  ╚██╔╝  ██║╚████║ ██╔██╗ \x1b[0m');
+    term.writeln('\x1b[1;35m  ███████║██║     ██║  ██║   ██║   ██║ ╚███║██╔╝╚██╗\x1b[0m');
+    term.writeln('\x1b[1;35m  ╚══════╝╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚══╝╚═╝  ╚═╝\x1b[0m');
+    term.writeln('');
+    term.writeln('\x1b[32m  AI-Native Personal DevOps Station  \x1b[90mv1.0\x1b[0m');
+    term.writeln('\x1b[90m  ─────────────────────────────────────────────────────\x1b[0m');
+    term.writeln('');
+  </script>
+</body>
+</html>

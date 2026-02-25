@@ -1,166 +1,216 @@
-namespace SphynxApp;
+namespace Sphynx;
 
 partial class MainForm
 {
-    private System.ComponentModel.IContainer components = null;
-    private Microsoft.Web.WebView2.WinForms.WebView2 webViewTerminal;
-    private System.Windows.Forms.TextBox txtInput;
-    private System.Windows.Forms.Button btnSend;
-    private System.Windows.Forms.ComboBox cmbAiTool;
-    private System.Windows.Forms.Label lblTool;
-    private System.Windows.Forms.TextBox txtPid;
-    private System.Windows.Forms.TextBox txtMsg;
-    private System.Windows.Forms.Button btnSendToPid;
-    private System.Windows.Forms.Label lblPid;
-    private System.Windows.Forms.Label lblMsg;
+    private System.ComponentModel.IContainer components = null!;
+
+    // ── Controls ───────────────────────────────────────────────
+    private Microsoft.Web.WebView2.WinForms.WebView2 webViewTerminal = null!;
+    private Panel     panelBottom  = null!;
+    private Panel     panelStatus  = null!;
+    private TextBox   txtInput     = null!;
+    private Button    btnSend      = null!;
+    private Button    btnEnter     = null!;
+    private Button    btnStop      = null!;
+    private Button    btnClear     = null!;
+    private Label     lblStatus    = null!;
+    private Label     lblInputHint = null!;
 
     protected override void Dispose(bool disposing)
     {
         if (disposing && (components != null))
-        {
             components.Dispose();
-        }
         base.Dispose(disposing);
     }
 
     private void InitializeComponent()
     {
-        this.webViewTerminal = new Microsoft.Web.WebView2.WinForms.WebView2();
-        this.txtInput = new System.Windows.Forms.TextBox();
-        this.btnSend = new System.Windows.Forms.Button();
-        this.cmbAiTool = new System.Windows.Forms.ComboBox();
-        this.lblTool = new System.Windows.Forms.Label();
-        this.txtPid = new System.Windows.Forms.TextBox();
-        this.txtMsg = new System.Windows.Forms.TextBox();
-        this.btnSendToPid = new System.Windows.Forms.Button();
-        this.lblPid = new System.Windows.Forms.Label();
-        this.lblMsg = new System.Windows.Forms.Label();
-        ((System.ComponentModel.ISupportInitialize)(this.webViewTerminal)).BeginInit();
-        this.SuspendLayout();
-        // 
-        // webViewTerminal
-        // 
-        this.webViewTerminal.AllowExternalDrop = true;
-        this.webViewTerminal.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-        this.webViewTerminal.CreationProperties = null;
-        this.webViewTerminal.DefaultBackgroundColor = System.Drawing.Color.White;
-        this.webViewTerminal.Location = new System.Drawing.Point(12, 45);
-        this.webViewTerminal.Name = "webViewTerminal";
-        this.webViewTerminal.Size = new System.Drawing.Size(776, 320);
-        this.webViewTerminal.TabIndex = 0;
-        this.webViewTerminal.ZoomFactor = 1D;
-        // 
-        // lblPid
-        // 
-        this.lblPid.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-        this.lblPid.AutoSize = true;
-        this.lblPid.Location = new System.Drawing.Point(12, 378);
-        this.lblPid.Name = "lblPid";
-        this.lblPid.Size = new System.Drawing.Size(28, 15);
-        this.lblPid.TabIndex = 5;
-        this.lblPid.Text = "PID:";
-        // 
-        // txtPid
-        // 
-        this.txtPid.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-        this.txtPid.Location = new System.Drawing.Point(46, 375);
-        this.txtPid.Name = "txtPid";
-        this.txtPid.Size = new System.Drawing.Size(60, 23);
-        this.txtPid.TabIndex = 6;
-        // 
-        // lblMsg
-        // 
-        this.lblMsg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-        this.lblMsg.AutoSize = true;
-        this.lblMsg.Location = new System.Drawing.Point(115, 378);
-        this.lblMsg.Name = "lblMsg";
-        this.lblMsg.Size = new System.Drawing.Size(32, 15);
-        this.lblMsg.TabIndex = 7;
-        this.lblMsg.Text = "Msg:";
-        // 
-        // txtMsg
-        // 
-        this.txtMsg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-        this.txtMsg.Location = new System.Drawing.Point(153, 375);
-        this.txtMsg.Name = "txtMsg";
-        this.txtMsg.Size = new System.Drawing.Size(514, 23);
-        this.txtMsg.TabIndex = 8;
-        // 
-        // btnSendToPid
-        // 
-        this.btnSendToPid.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-        this.btnSendToPid.Location = new System.Drawing.Point(673, 374);
-        this.btnSendToPid.Name = "btnSendToPid";
-        this.btnSendToPid.Size = new System.Drawing.Size(115, 23);
-        this.btnSendToPid.TabIndex = 9;
-        this.btnSendToPid.Text = "Send to PID";
-        this.btnSendToPid.UseVisualStyleBackColor = true;
-        this.btnSendToPid.Click += new System.EventHandler(this.btnSendToPid_Click);
-        // 
-        // txtInput
-        // 
-        this.txtInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-        this.txtInput.Location = new System.Drawing.Point(12, 408);
-        this.txtInput.Name = "txtInput";
-        this.txtInput.Size = new System.Drawing.Size(695, 23);
-        this.txtInput.TabIndex = 1;
-        // 
-        // btnSend
-        // 
-        this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-        this.btnSend.Location = new System.Drawing.Point(713, 407);
-        this.btnSend.Name = "btnSend";
-        this.btnSend.Size = new System.Drawing.Size(75, 23);
-        this.btnSend.TabIndex = 2;
-        this.btnSend.Text = "Send";
-        this.btnSend.UseVisualStyleBackColor = true;
-        this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
-        // 
-        // cmbAiTool
-        // 
-        this.cmbAiTool.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-        this.cmbAiTool.FormattingEnabled = true;
-        this.cmbAiTool.Items.AddRange(new object[] {
-            "Gemini CLI",
-            "Claude Code"});
-        this.cmbAiTool.Location = new System.Drawing.Point(100, 12);
-        this.cmbAiTool.Name = "cmbAiTool";
-        this.cmbAiTool.Size = new System.Drawing.Size(150, 23);
-        this.cmbAiTool.TabIndex = 3;
-        this.cmbAiTool.SelectedIndexChanged += new System.EventHandler(this.cmbAiTool_SelectedIndexChanged);
-        // 
-        // lblTool
-        // 
-        this.lblTool.AutoSize = true;
-        this.lblTool.Location = new System.Drawing.Point(12, 15);
-        this.lblTool.Name = "lblTool";
-        this.lblTool.Size = new System.Drawing.Size(82, 15);
-        this.lblTool.TabIndex = 4;
-        this.lblTool.Text = "Active AI Tool:";
-        // 
+        components      = new System.ComponentModel.Container();
+        webViewTerminal = new Microsoft.Web.WebView2.WinForms.WebView2();
+        panelBottom     = new Panel();
+        panelStatus     = new Panel();
+        txtInput        = new TextBox();
+        btnSend         = new Button();
+        btnEnter        = new Button();
+        btnStop         = new Button();
+        btnClear        = new Button();
+        lblStatus       = new Label();
+        lblInputHint    = new Label();
+
+        ((System.ComponentModel.ISupportInitialize)webViewTerminal).BeginInit();
+        panelBottom.SuspendLayout();
+        panelStatus.SuspendLayout();
+        SuspendLayout();
+
+        // ════════════════════════════════════════════════════════
+        // webViewTerminal — 填滿主視窗（Dock = Fill）
+        // ════════════════════════════════════════════════════════
+        webViewTerminal.Dock                   = DockStyle.Fill;
+        webViewTerminal.BackColor              = Color.FromArgb(13, 17, 23);
+        webViewTerminal.CreationProperties     = null;
+        webViewTerminal.DefaultBackgroundColor = Color.FromArgb(13, 17, 23);
+        webViewTerminal.Name                   = "webViewTerminal";
+        webViewTerminal.ZoomFactor             = 1D;
+
+        // ════════════════════════════════════════════════════════
+        // panelBottom — 底部輸入列
+        //
+        // 使用 Dock 佈局，完全避免手動計算寬度：
+        //   [lblInputHint][txtInput (Fill)][btnSend][btnEnter][btnStop][btnClear]
+        //
+        // Padding = (left=8, top=10, right=8, bottom=10) → 有效高度 32px
+        // ════════════════════════════════════════════════════════
+        panelBottom.Dock      = DockStyle.Bottom;
+        panelBottom.Height    = 52;
+        panelBottom.BackColor = Color.FromArgb(22, 27, 34);
+        panelBottom.Padding   = new Padding(8, 10, 8, 10);
+        panelBottom.Name      = "panelBottom";
+
+        // ── 右側按鈕區：獨立 Panel，DockStyle.Right，固定寬度 ──
+        // 改用內嵌 Panel 而非 DockStyle.Right on each button，
+        // 確保按鈕群組無論視窗多寬都整齊靠右。
+        var panelBtnRight = new Panel();
+        panelBtnRight.Dock      = DockStyle.Right;
+        panelBtnRight.Width     = 256;
+        panelBtnRight.BackColor = Color.FromArgb(22, 27, 34);
+        panelBtnRight.Padding   = new Padding(4, 0, 0, 0);
+
+        // 按鈕垂直置中：content 32px，按鈕 28px → y = (32-28)/2 = 2
+        const int btnY = 2;
+
+        // ── btnSend ──────────────────────────────────────────
+        btnSend.Location  = new Point(4, btnY);
+        btnSend.Size      = new Size(60, 28);
+        btnSend.Text      = "送出";
+        btnSend.BackColor = Color.FromArgb(35, 134, 54);
+        btnSend.ForeColor = Color.White;
+        btnSend.FlatStyle = FlatStyle.Flat;
+        btnSend.FlatAppearance.BorderSize = 0;
+        btnSend.Font      = new Font("Segoe UI", 9f, FontStyle.Bold);
+        btnSend.Name      = "btnSend";
+        btnSend.Click    += btnSend_Click;
+
+        // ── btnEnter ─────────────────────────────────────────
+        btnEnter.Location  = new Point(68, btnY);
+        btnEnter.Size      = new Size(64, 28);
+        btnEnter.Text      = "↵ Enter";
+        btnEnter.BackColor = Color.FromArgb(56, 76, 110);
+        btnEnter.ForeColor = Color.FromArgb(158, 202, 255);
+        btnEnter.FlatStyle = FlatStyle.Flat;
+        btnEnter.FlatAppearance.BorderSize = 0;
+        btnEnter.Font      = new Font("Segoe UI", 9f);
+        btnEnter.Name      = "btnEnter";
+        btnEnter.Click    += btnEnter_Click;
+
+        // ── btnStop ───────────────────────────────────────────
+        btnStop.Location  = new Point(136, btnY);
+        btnStop.Size      = new Size(60, 28);
+        btnStop.Text      = "Ctrl+C";
+        btnStop.BackColor = Color.FromArgb(218, 54, 51);
+        btnStop.ForeColor = Color.White;
+        btnStop.FlatStyle = FlatStyle.Flat;
+        btnStop.FlatAppearance.BorderSize = 0;
+        btnStop.Font      = new Font("Segoe UI", 9f);
+        btnStop.Name      = "btnStop";
+        btnStop.Click    += btnStop_Click;
+
+        // ── btnClear ──────────────────────────────────────────
+        btnClear.Location  = new Point(200, btnY);
+        btnClear.Size      = new Size(52, 28);
+        btnClear.Text      = "清除";
+        btnClear.BackColor = Color.FromArgb(48, 54, 61);
+        btnClear.ForeColor = Color.FromArgb(201, 209, 217);
+        btnClear.FlatStyle = FlatStyle.Flat;
+        btnClear.FlatAppearance.BorderSize = 0;
+        btnClear.Font      = new Font("Segoe UI", 9f);
+        btnClear.Name      = "btnClear";
+        btnClear.Click    += btnClear_Click;
+
+        panelBtnRight.Controls.AddRange(
+            new Control[] { btnSend, btnEnter, btnStop, btnClear });
+
+        // ── lblInputHint ──────────────────────────────────────
+        lblInputHint.Dock      = DockStyle.Fill;
+        lblInputHint.Text      = "指令:";
+        lblInputHint.ForeColor = Color.FromArgb(100, 121, 167);
+        lblInputHint.Font      = new Font("Segoe UI", 9f);
+        lblInputHint.TextAlign = ContentAlignment.MiddleCenter;
+        lblInputHint.Name      = "lblInputHint";
+
+        // ── txtInput ──────────────────────────────────────────
+        txtInput.Dock          = DockStyle.Fill;
+        txtInput.BackColor     = Color.FromArgb(13, 17, 23);
+        txtInput.ForeColor     = Color.FromArgb(201, 209, 217);
+        txtInput.BorderStyle   = BorderStyle.FixedSingle;
+        txtInput.Font          = new Font("Cascadia Code", 10f);
+        txtInput.PlaceholderText = "輸入給 Claude 的任務指令… (Enter 送出)";
+        txtInput.Name          = "txtInput";
+        txtInput.KeyDown      += txtInput_KeyDown;
+
+        // ── TableLayoutPanel：確保 label 與 textbox 欄位不重疊 ──
+        // Dock=Left + Dock=Fill 共存時 WinForms 會讓 Fill 先佔滿整個區域
+        // 再把 Left label 疊上去，導致 TextBox 左側被遮蔽。
+        // TableLayoutPanel 以欄寬切割保證絕對不重疊。
+        var tblInput = new TableLayoutPanel();
+        tblInput.Dock        = DockStyle.Fill;
+        tblInput.Margin      = new Padding(0);
+        tblInput.Padding     = new Padding(0);
+        tblInput.ColumnCount = 2;
+        tblInput.RowCount    = 1;
+        tblInput.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 46f)); // label
+        tblInput.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f)); // textbox
+        tblInput.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
+        tblInput.Controls.Add(lblInputHint, 0, 0);
+        tblInput.Controls.Add(txtInput,     1, 0);
+
+        // ── 加入 panelBottom：Right 先加，Fill 最後加 ─────────
+        panelBottom.Controls.Add(panelBtnRight);   // Dock=Right
+        panelBottom.Controls.Add(tblInput);        // Dock=Fill（tblInput 取代直接放 txtInput）
+
+        // ════════════════════════════════════════════════════════
+        // panelStatus — 最底部狀態列
+        // ════════════════════════════════════════════════════════
+        panelStatus.Dock      = DockStyle.Bottom;
+        panelStatus.Height    = 24;
+        panelStatus.BackColor = Color.FromArgb(31, 111, 235);
+        panelStatus.Name      = "panelStatus";
+
+        lblStatus.Dock      = DockStyle.Fill;
+        lblStatus.Text      = "Sphynx 正在初始化…";
+        lblStatus.ForeColor = Color.White;
+        lblStatus.Font      = new Font("Segoe UI", 8.5f);
+        lblStatus.TextAlign = ContentAlignment.MiddleLeft;
+        lblStatus.Padding   = new Padding(6, 0, 0, 0);
+        lblStatus.Name      = "lblStatus";
+
+        panelStatus.Controls.Add(lblStatus);
+
+        // ════════════════════════════════════════════════════════
         // MainForm
-        // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 450);
-        this.Controls.Add(this.btnSendToPid);
-        this.Controls.Add(this.txtMsg);
-        this.Controls.Add(this.lblMsg);
-        this.Controls.Add(this.txtPid);
-        this.Controls.Add(this.lblPid);
-        this.Controls.Add(this.lblTool);
-        this.Controls.Add(this.cmbAiTool);
-        this.Controls.Add(this.btnSend);
-        this.Controls.Add(this.txtInput);
-        this.Controls.Add(this.webViewTerminal);
-        this.Name = "MainForm";
-        this.Text = "Sphynx AI DevOps Station";
-        ((System.ComponentModel.ISupportInitialize)(this.webViewTerminal)).EndInit();
-        this.ResumeLayout(false);
-        this.PerformLayout();
+        // ════════════════════════════════════════════════════════
+        AutoScaleDimensions = new SizeF(7F, 15F);
+        AutoScaleMode       = AutoScaleMode.Font;
+        BackColor           = Color.FromArgb(13, 17, 23);
+        ClientSize          = new Size(1280, 820);
+        MinimumSize         = new Size(1280, 820);
+        MaximumSize         = new Size(1280, 820);   // 鎖定視窗大小
+        FormBorderStyle     = FormBorderStyle.FixedSingle;
+        MaximizeBox         = false;
+        Text                = "Sphynx — AI-Native Personal DevOps Station";
+        Name                = "MainForm";
+        StartPosition       = FormStartPosition.CenterScreen;
+
+        // 加入順序決定 Dock 優先：Bottom 先加，Fill 最後加
+        Controls.Add(webViewTerminal);   // Dock=Fill  → 最後排，填滿上方空間
+        Controls.Add(panelBottom);       // Dock=Bottom
+        Controls.Add(panelStatus);       // Dock=Bottom（先加 → 在最下方）
+
+        Load        += MainForm_Load;
+        FormClosing += MainForm_FormClosing;
+
+        ((System.ComponentModel.ISupportInitialize)webViewTerminal).EndInit();
+        panelBottom.ResumeLayout(false);
+        panelStatus.ResumeLayout(false);
+        ResumeLayout(false);
     }
 }

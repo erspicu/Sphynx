@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Sphynx</AssemblyName>
+    <RootNamespace>Sphynx</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!--
+    ══════════════════════════════════════════════════════════
+    NuGet 套件清單
+    ══════════════════════════════════════════════════════════
+    1. Pty.Net              — ConPTY 虛擬終端機，欺騙 Claude CLI 以為有真實 TTY
+    2. Microsoft.Web.WebView2 — 嵌入 Chromium，渲染 xterm.js
+    3. Telegram.Bot         — Long Polling 遠端控制
+    ══════════════════════════════════════════════════════════
+  -->
+  <ItemGroup>
+    <PackageReference Include="Pty.Net"                     Version="0.1.6-pre" />
+    <PackageReference Include="Microsoft.Web.WebView2"      Version="1.0.2849.39" />
+    <PackageReference Include="Telegram.Bot"                Version="22.0.0" />
+  </ItemGroup>
+
+  <!-- 把 terminal.html 一起輸出到執行目錄 -->
+  <ItemGroup>
+    <Content Include="terminal.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
